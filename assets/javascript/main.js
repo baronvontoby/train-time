@@ -21,7 +21,13 @@ $(document).ready(function(){
         var trainName = $("#train-name-input").val().trim();
         var trainDestination = $("#destination-input").val().trim();
         var trainFrequency = parseInt($("#frequency-input").val().trim());
-        var trainFirst = parseInt($("#first-train-input").val().trim());
+        var trainFirst = $("#first-train-input").val().trim();
+        
+        console.log(trainName);
+        console.log(trainDestination);
+        console.log(trainFrequency);
+        console.log(trainFirst);
+        
         
         database.ref().push({
             trainName: trainName,
@@ -29,35 +35,39 @@ $(document).ready(function(){
             trainFrequency: trainFrequency,
             trainFirst: trainFirst
         });
-        console.log(trainName);
-        console.log(trainDestination);
-        console.log(trainFrequency);
-        console.log(trainFirst);
+    });
 
+    database.ref().on("child_added", function(childSnapshot){
+        var trainName = childSnapshot.val().trainName;
+        var trainDestination = childSnapshot.val().trainDestination;
+        var trainFrequency = childSnapshot.val().trainFrequency;
+        var trainFirst = childSnapshot.val().trainFirst;
+
+        
         let newRow = $("<div>");
         newRow.addClass("row new-train-row");
         $("#train-rows").append(newRow);
-
+        
         let newNameCol = $("<div>");
         newNameCol.addClass("col-3");
         newNameCol.attr("id", "train-name-display");
         $(".new-train-row").append(newNameCol);
-
+        
         let newDestinationCol = $("<div>");
         newDestinationCol.addClass("col-3");
         newDestinationCol.attr("id", "destination-display");
         $(".new-train-row").append(newDestinationCol);
-
+        
         let newFrequencyCol = $("<div>");
         newFrequencyCol.addClass("col-2");
         newFrequencyCol.attr("id", "frequency-display");
         $(".new-train-row").append(newFrequencyCol);
-
+        
         let nextArrivalCol = $("<div>");
         nextArrivalCol.addClass("col-2");
         nextArrivalCol.attr("id", "next-arrival-display");
         $(".new-train-row").append(nextArrivalCol);
-
+        
         let minutesAwayCol = $("<div>");
         minutesAwayCol.addClass("col-2");
         minutesAwayCol.attr("id", "minutes-away-display");
@@ -77,17 +87,17 @@ $(document).ready(function(){
         newFrequency.attr("id", "new-frequency");
         newFrequency.text(trainFrequency);
         $("#frequency-display").append(newFrequency);
-
+        
         let nextArrival = $("<p>");
         nextArrival.attr("id", "next-arrival");
         nextArrival.text(arrival());
         $("#next-arrival-display").append(nextArrival);
-
+        
         let minutesAway = $("<p>");
         minutesAway.attr("id", "minutes-away");
         minutesAway.text(timeAway());
         $("#minutes-away-display").append(minutesAway);
-
+        
         function timeAway () {
             var firstTimeConverted = moment(trainFirst, "HH:mm").subtract(1, "years");
             var currentTime = moment();
@@ -99,9 +109,16 @@ $(document).ready(function(){
         }
         
         function arrival () {
-           var arrivalTime = moment().add(timeAway(),"minutes");
-           return moment(arrivalTime).format("hh:mm:a");
+            var arrivalTime = moment().add(timeAway(),"minutes");
+            return moment(arrivalTime).format("hh:mm:a");
         }
-    });
+        
+        // var tAway = timeAway();
+        // var here = arrival();
+        
+        
+    })
 
+
+    
 })
